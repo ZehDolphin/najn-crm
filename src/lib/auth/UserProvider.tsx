@@ -7,15 +7,26 @@ const context = createContext<{
 	user?: User
 }>(null)
 
-export default function UserProvider({ children }: { children: any }) {
+export default function UserProvider({
+	children,
+	onUserChange,
+}: {
+	children: any
+	onUserChange?: Function
+}) {
 	const [user, setUser] = useState<User>()
 	const navigate = useNavigate()
+
+	useEffect(() => {
+		onUserChange && onUserChange(user)
+	}, [user])
 
 	useEffect(() => {
 		onAuthStateChanged(auth, (user) => {
 			if (user) {
 				setUser(user)
 			} else {
+				setUser(undefined)
 				navigate('/login')
 			}
 		})

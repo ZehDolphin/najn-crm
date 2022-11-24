@@ -1,0 +1,46 @@
+body {
+	--margin-xl: calc(100rem / 16);
+	--margin-l: calc(60rem / 16);
+	--margin-m: calc(40rem / 16);
+	--margin-s: calc(20rem / 16);
+	--margin-xs: calc(10rem / 16);
+}
+
+// Standard Spacer
+.spacer {
+	&.xl {
+		height: var(--margin-xl);
+	}
+	&.l {
+		height: var(--margin-l);
+	}
+	&.m {
+		height: var(--margin-m);
+	}
+	&.s {
+		height: var(--margin-s);
+	}
+	&.xs {
+		height: var(--margin-xs);
+	}
+
+	&.wxl {
+		width: var(--margin-xl);
+	}
+	&.wl {
+		width: var(--margin-l);
+	}
+	&.wm {
+		width: var(--margin-m);
+	}
+	&.ws {
+		width: var(--margin-s);
+	}
+	&.wxs {
+		width: var(--margin-xs);
+	}
+
+	&.fill {
+		flex: 1;
+	}
+}

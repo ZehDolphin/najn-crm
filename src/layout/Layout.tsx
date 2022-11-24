@@ -41,27 +41,34 @@ const Layout = ({ children }: { children: ReactNode }) => {
 	}
 
 	const user = useUser()
-	if (!user) return
 
 	return (
 		<Style style={{ minHeight: '100vh' }}>
-			<Sider
-				collapsible
-				collapsed={collapsed}
-				onCollapse={(value) => setCollapsed(value)}
-			>
-				<Menu
-					theme="dark"
-					selectedKeys={[location.pathname]}
-					mode="inline"
-					items={items}
-					onSelect={onSelect}
-				/>
+			{user && (
+				<Sider
+					collapsible
+					collapsed={collapsed}
+					onCollapse={(value) => setCollapsed(value)}
+				>
+					<Menu
+						theme="dark"
+						selectedKeys={[location.pathname]}
+						mode="inline"
+						items={items}
+						onSelect={onSelect}
+					/>
 
-				<div className="bottom">
-					<Button onClick={() => signOut(auth)}>Logout</Button>
-				</div>
-			</Sider>
+					<div className="bottom">
+						<Button
+							onClick={() => signOut(auth)}
+							type="ghost"
+							style={{ color: 'white' }}
+						>
+							Logout
+						</Button>
+					</div>
+				</Sider>
+			)}
 			<AntdLayout className="site-layout">
 				<Content
 					style={{

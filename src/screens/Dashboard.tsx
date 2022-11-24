@@ -1,10 +1,12 @@
 import React from 'react'
-import { Layout } from '../layout/Layout'
+import { ScreenHeader } from '../layout/ScreenHeader'
 
 export default function Dashboard() {
 	return (
-		<Layout>
-			<h1>Dashboard</h1>
-		</Layout>
+		<>
+			<ScreenHeader>
+				<h1>Dashboard</h1>
+			</ScreenHeader>
+		</>
 	)
 }
