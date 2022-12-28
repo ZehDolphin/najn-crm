@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { Button, Form, Input, message, Modal } from 'antd'
+import React, { useEffect, useRef, useState } from 'react'
+import { Button, Form, Input, message, Modal, notification } from 'antd'
 import { NewCustomerSearchField } from './NewCustomerSearchField'
 import { EniroCompany } from '../../lib/companies/TemporaryCompany'
 import { addCustomer, Customer } from '../../lib/customers/Customers'
@@ -15,6 +15,21 @@ export default function AddCustomerButton() {
 
 	const [customer, setCustomer] = useState<Customer>({ name: '', org: '' })
 	const [messageApi, contextHolder] = message.useMessage()
+
+	const [api, notificationContextHolder] = notification.useNotification()
+	const shownError = useRef(false)
+
+	const searchFailed = () => {
+		if (shownError.current !== false) return
+		shownError.current = true
+		api.warning({
+			message: `Warning`,
+			description:
+				'The backend service for fetching company data is not available at this moment. The customer can be added manually',
+			placement: 'topRight',
+			duration: 0,
+		})
+	}
 
 	const handleOk = async () => {
 		if (customer.name == '')
@@ -69,6 +84,7 @@ export default function AddCustomerButton() {
 
 	return (
 		<>
+			{notificationContextHolder}
 			{contextHolder}
 			<Button type="primary" onClick={() => setIsModalOpen(true)}>
 				Add Customer
@@ -96,6 +112,7 @@ export default function AddCustomerButton() {
 								setCustomer((c) => ({ ...c, name: name }))
 							}
 							onSelect={selectedCompany}
+							onFailedSearch={searchFailed}
 						/>
 					</Form.Item>
 					<Form.Item label="Org. Number">

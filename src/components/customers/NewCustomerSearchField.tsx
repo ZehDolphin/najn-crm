@@ -11,10 +11,16 @@ import {
 interface Params {
 	onSelect?: (company: EniroCompany) => void
 	onChange?: (companyName: string) => void
+	onFailedSearch?: () => void
 	value?: string
 }
 
-const NewCustomerSearchField = ({ onSelect, onChange, value }: Params) => {
+const NewCustomerSearchField = ({
+	onSelect,
+	onChange,
+	onFailedSearch,
+	value,
+}: Params) => {
 	const [_value, setValue] = useState(value || '')
 	const [options, setOptions] = useState<{ value: string }[]>([])
 
@@ -24,9 +30,16 @@ const NewCustomerSearchField = ({ onSelect, onChange, value }: Params) => {
 	}, [value])
 
 	const onSearch = async (searchText: string) => {
-		if (!searchText) return setOptions([])
-		let companies = await search(searchText)
-		setOptions(companies.map((company: any) => ({ value: company.name })))
+		try {
+			if (!searchText) return setOptions([])
+			let companies = await search(searchText)
+			setOptions(
+				companies.map((company: any) => ({ value: company.name }))
+			)
+		} catch (e) {
+			setOptions([])
+			onFailedSearch()
+		}
 	}
 
 	const _onSelect = async (companyName: string) => {

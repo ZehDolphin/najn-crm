@@ -52,7 +52,10 @@ const Layout = ({ children }: { children: ReactNode }) => {
 				>
 					<Menu
 						theme="dark"
-						selectedKeys={[location.pathname]}
+						selectedKeys={location.pathname
+							.substring(1)
+							.split('/')
+							.map((s) => `/${s}`)}
 						mode="inline"
 						items={items}
 						onSelect={onSelect}
