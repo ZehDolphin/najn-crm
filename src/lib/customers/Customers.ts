@@ -90,3 +90,16 @@ export function useCustomers() {
 
 	return customers
 }
+
+export function useCustomer(id: string) {
+	const [customer, setCustomer] = useState<Customer>(undefined)
+
+	onSnapshot(doc(db, 'customers', id), (doc) => {
+		setCustomer({
+			...doc.data(),
+			id: doc.id,
+		} as Customer)
+	})
+
+	return customer
+}

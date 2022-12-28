@@ -14,6 +14,7 @@ import Login from './screens/Login'
 import UserProvider from './lib/auth/UserProvider'
 import Dashboard from './screens/Dashboard'
 import { Layout } from './layout/Layout'
+import Customer from './screens/Customers/Customer'
 
 function App() {
 	const [user, setUser] = useState()
@@ -25,9 +26,18 @@ function App() {
 					<Routes>
 						<Route path="/signup" element={<Signup />} />
 						<Route path="/login" element={<Login />} />
-						{user && <Route path="/" element={<Dashboard />} />}
 						{user && (
-							<Route path="/customers" element={<Customers />} />
+							<>
+								<Route path="/" element={<Dashboard />} />
+								<Route
+									path="/customers"
+									element={<Customers />}
+								/>
+								<Route
+									path="/customers/:id"
+									element={<Customer />}
+								/>
+							</>
 						)}
 					</Routes>
 				</Layout>
