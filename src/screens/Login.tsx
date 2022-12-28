@@ -61,7 +61,7 @@ export default function Login() {
 						Login
 					</Button>
 				</Form.Item>
-				<a onClick={() => navigate('/signup')}>Create an account</a>
+				{/* <a onClick={() => navigate('/signup')}>Create an account</a> */}
 			</Form>
 		</Style>
 	)

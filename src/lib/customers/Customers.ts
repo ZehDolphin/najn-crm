@@ -15,8 +15,9 @@ import {
 	Timestamp,
 	where,
 } from 'firebase/firestore'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { db } from '../../firebase'
+import { useUser } from '../auth/UserProvider'
 import { EniroCompany } from '../companies/TemporaryCompany'
 
 export interface Customer {
@@ -76,30 +77,44 @@ export async function addCustomer(customer: Customer) {
 
 export function useCustomers() {
 	const [customers, setCustomers] = useState<Customer[]>([])
+	const user = useUser()
 
-	onSnapshot(collection(db, 'customers'), (docs) => {
-		let c: Customer[] = []
-		docs.forEach((doc) => {
-			c.push({
-				...doc.data(),
-				id: doc.id,
-			} as Customer)
+	useEffect(() => {
+		if (!user) return
+
+		const unsub = onSnapshot(collection(db, 'customers'), (docs) => {
+			let c: Customer[] = []
+			docs.forEach((doc) => {
+				c.push({
+					...doc.data(),
+					id: doc.id,
+				} as Customer)
+			})
+			setCustomers(c)
 		})
-		setCustomers(c)
-	})
+
+		return () => unsub()
+	}, [user])
 
 	return customers
 }
 
 export function useCustomer(id: string) {
 	const [customer, setCustomer] = useState<Customer>(undefined)
+	const user = useUser()
 
-	onSnapshot(doc(db, 'customers', id), (doc) => {
-		setCustomer({
-			...doc.data(),
-			id: doc.id,
-		} as Customer)
-	})
+	useEffect(() => {
+		if (!user) return
+
+		const unsub = onSnapshot(doc(db, 'customers', id), (doc) => {
+			setCustomer({
+				...doc.data(),
+				id: doc.id,
+			} as Customer)
+		})
+
+		return () => unsub()
+	}, [user])
 
 	return customer
 }

@@ -24,7 +24,6 @@ function App() {
 			<UserProvider onUserChange={setUser}>
 				<Layout>
 					<Routes>
-						<Route path="/signup" element={<Signup />} />
 						<Route path="/login" element={<Login />} />
 						{user && (
 							<>
