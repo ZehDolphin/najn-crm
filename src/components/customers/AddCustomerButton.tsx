@@ -26,9 +26,12 @@ export default function AddCustomerButton() {
 		if (validateOrganisationNumber(customer.org) === false)
 			return messageApi.error('Invalid organization number')
 
+		setLoading(true)
 		try {
 			await addCustomer(customer)
+			setLoading(false)
 		} catch (e) {
+			setLoading(false)
 			if (e.message === 'Customer exists')
 				return messageApi.error(
 					'A customer with the same organization number already exists!'

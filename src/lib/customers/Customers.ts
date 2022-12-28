@@ -9,14 +9,22 @@ import {
 	doc,
 	getDoc,
 	getDocs,
+	limit,
+	onSnapshot,
 	query,
 	Timestamp,
 	where,
 } from 'firebase/firestore'
+import { useState } from 'react'
 import { db } from '../../firebase'
 import { EniroCompany } from '../companies/TemporaryCompany'
 
 export interface Customer {
+	/**
+	 * A Firestore ID that is set on all fetched customers.
+	 */
+	id?: string
+
 	/**
 	 * A unique Swedish organization number.
 	 */
@@ -64,4 +72,21 @@ export async function addCustomer(customer: Customer) {
 		addedDate: Timestamp.now(),
 		addedBy: auth.currentUser.uid,
 	})
+}
+
+export function useCustomers() {
+	const [customers, setCustomers] = useState<Customer[]>([])
+
+	onSnapshot(collection(db, 'customers'), (docs) => {
+		let c: Customer[] = []
+		docs.forEach((doc) => {
+			c.push({
+				...doc.data(),
+				id: doc.id,
+			} as Customer)
+		})
+		setCustomers(c)
+	})
+
+	return customers
 }
