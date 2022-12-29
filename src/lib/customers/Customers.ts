@@ -27,6 +27,14 @@ export interface Customer {
 	id?: string
 
 	/**
+	 * Firestore date object for when the Customer was added.
+	 */
+	addedDate?: {
+		seconds: number
+		nanoseconds: number
+	}
+
+	/**
 	 * A unique Swedish organization number.
 	 */
 	org: string
@@ -53,6 +61,21 @@ export interface Customer {
 	description?: string
 }
 
+export interface CustomerEvent {
+	time: {
+		seconds: number
+		nanoseconds: number
+	}
+
+	author_name: string
+
+	type: 'event' | 'comment'
+
+	id: string
+
+	content: string
+}
+
 export async function doesCustomerExist(customer: Customer) {
 	return !(
 		await getDocs(
@@ -72,7 +95,16 @@ export async function addCustomer(customer: Customer) {
 		...customer,
 		addedDate: Timestamp.now(),
 		addedBy: auth.currentUser.uid,
+		author_name: auth.currentUser.displayName || auth.currentUser.email,
 	})
+
+	await addCustomerEvent(
+		ref as any,
+		{
+			type: 'event',
+			content: 'Customer added',
+		} as any
+	)
 }
 
 export function useCustomers() {
@@ -117,4 +149,51 @@ export function useCustomer(id: string) {
 	}, [user])
 
 	return customer
+}
+
+export function useCustomerEvents(id: string) {
+	const [events, setEvents] = useState<CustomerEvent[]>([])
+	const user = useUser()
+
+	useEffect(() => {
+		if (!user) return
+
+		const unsub = onSnapshot(
+			collection(db, 'customers', id, 'events'),
+			(docs) => {
+				let c: CustomerEvent[] = []
+				docs.forEach((doc) => {
+					c.push({
+						...doc.data(),
+						id: doc.id,
+					} as any)
+				})
+
+				c = c.sort((a, b) => b.time.seconds - a.time.seconds)
+
+				setEvents(c)
+			}
+		)
+
+		return () => unsub()
+	}, [user])
+
+	return events
+}
+
+export async function addCustomerEvent(
+	customer: Customer,
+	event: CustomerEvent
+) {
+	const auth = getAuth()
+
+	const ref = await addDoc(
+		collection(db, 'customers', customer.id, 'events'),
+		{
+			...event,
+			time: Timestamp.now(),
+			author_id: auth.currentUser.uid,
+			author_name: auth.currentUser.displayName || auth.currentUser.email,
+		}
+	)
 }
